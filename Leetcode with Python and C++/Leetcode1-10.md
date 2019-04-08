@@ -98,3 +98,124 @@ class Solution:
             
         return dummyhead.next
 ```
+
+3. Longest substring without repeating characters
+最长不重复子串，hash+滑动窗口
+```
+//hash记录出现次数
+class Solution {
+public:
+	int lengthOfLongestSubstring(string s) {
+        if(s.size() <= 1)
+            return s.size();
+        
+        int left = 0, right = 0;
+        int res = 0;
+        vector<int> freq(256,0);
+        for(right; right < s.size(); right++){
+            while(freq[s[right]] != 0){
+                left++;
+                freq[s[left-1]]--;
+            }
+            res = max(res,right-left+1);
+            freq[s[right]]++;
+        }
+        return res;
+	}
+};
+
+//hash记录下标
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        if(s.size() <= 1)
+            return s.size();
+        vector<int> hash(256,-1);
+        
+        int res = 0;
+        int left = -1, right = 0;
+        for(right; right < s.size(); right++){
+            left = max(left,hash[s[right]]);
+            hash[s[right]] = right;
+            res = max(res,right-left);
+        }
+        return res;
+    }
+};
+```
+
+```
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        
+        dic, res, start = {}, 0, 0
+        for i, c in enumerate(s):
+            start = max(start, dic.get(c,-1)+1) # advance start if necessary
+            res = max(res, i-start+1) # update result
+            dic[c] = i
+        return res
+```
+
+4. Median of Two Sorted Arrays 
+归并排序解法
+```
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m = nums1.size(), n = nums2.size();
+        int left = (m+n-1)/2, right = (m+n)/2;
+        
+        return (findK(nums1,nums2,left)+findK(nums1,nums2,right))/2.0;
+    }
+    
+    int findK(vector<int>& nums1, vector<int>& nums2, int k){
+        int index1 = 0, index2 = 0;
+        k = k+1;
+        int res = 0;
+        while(k--){
+            if(index1 >= nums1.size())
+                res = nums2[index2++];
+            else if(index2 >= nums2.size())
+                res = nums1[index1++];
+            else if(nums1[index1] <= nums2[index2])
+                res = nums1[index1++];
+            else
+                res = nums2[index2++];
+        }
+        return res;
+    }
+};
+```
+
+```
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        m, n = len(nums1), len(nums2)
+        left = (m+n-1)//2
+        right = (m+n)//2
+        
+        return (self.findK(nums1,nums2,left)+self.findK(nums1,nums2,right))/2
+    
+    def findK(self,nums1,nums2,k):
+        index1, index2 = 0, 0
+        k = k+1
+        res = 0
+        
+        while k:
+            if index1 >= len(nums1):
+                res = nums2[index2]
+                index2 += 1
+            elif index2 >= len(nums2):
+                res = nums1[index1]
+                index1 += 1
+            elif nums1[index1] <= nums2[index2]:
+                res = nums1[index1]
+                index1 += 1
+            else:
+                res = nums2[index2]
+                index2 += 1
+            k -= 1
+        return res
+```
+
+5. Longest palindromic Substring
